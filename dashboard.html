@@ -201,6 +201,17 @@
         .subject-card:hover {
             transform: scale(1.05);
         }
+        .subject-card-2 {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .subject-card-2:hover {
+            transform: scale(1.05);
+        }
 
         .subject-title {
             font-size: 18px;
@@ -261,7 +272,7 @@
                 <div class="subject-title">Mathematics</div>
                 <div class="subject-details">Course Coordinator: Dr. Smith</div>
             </div>
-            <div class="subject-card">
+            <div class="subject-card-2">
                 <div class="subject-title">Physics</div>
                 <div class="subject-details">Course Coordinator: Dr. Johnson</div>
             </div>
@@ -345,6 +356,13 @@
             document.querySelectorAll(".subject-card").forEach(card => {
                 card.addEventListener("click", function() {
                     window.location.href = "subjectdetailsfaculty.html";
+                });
+            });
+        });
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll(".subject-card-2").forEach(card => {
+                card.addEventListener("click", function() {
+                    window.location.href = "trail.html";
                 });
             });
         });
