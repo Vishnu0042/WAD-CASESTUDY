@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subject Details</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f6f9;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styling */
+        .header {
+            background-color: #2C3E50; /* Dark Blue */
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px; /* Increase gap between items */
+            margin-right: 40px; /* Increase right margin */
+        }
+
+        .user-actions i {
+            font-size: 22px;
+            cursor: pointer;
+            color: #ffffff;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .user-actions i:hover {
+            color: #1abc9c; /* Light Green Hover */
+        }
+
+        /* Profile Image */
+        .profile-photo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .profile-photo:hover {
+            transform: scale(1.1);
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            background-color: #34495e; /* Darker Blue */
+            height: 100vh;
+            width: 250px;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            padding-top: 20px; /* To avoid overlapping with header */
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(-250px);
+            z-index: 999;
+        }
+
+        .sidebar.show {
+            transform: translateX(0);
+        }
+
+        .sidebar a {
+            display: block;
+            color: #ecf0f1;
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 18px;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .sidebar a:hover {
+            background-color: #1abc9c; /* Light Green Hover */
+        }
+
+        /* Hamburger Menu */
+        .hamburger-container {
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 70px; /* Just below the header */
+            left: 10px; /* Slightly away from the edge */
+            z-index: 1000;
+            background-color: #ffffff; /* White background */
+            border-radius: 5px; /* Slightly rounded corners */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Soft shadow */
+        }
+
+        .hamburger {
+            font-size: 24px;
+            cursor: pointer;
+            color: #34495e; /* Dark blue/gray color */
+        }
+
+        /* Main Content Styling */
+        .main-content {
+            margin-top: 100px; /* To avoid overlapping with header */
+            flex-grow: 1;
+            padding: 20px;
+            /* margin-left: 250px; */
+            transition: margin-left 0.3s ease-in-out;
+            position: relative; /* Ensure it is correctly positioned */
+            z-index: 1; /* Ensure it stays above the sidebar */
+        }
+
+        .main-content.collapsed {
+            margin-left: 0;
+        }
+
+        /* Hide the hamburger when sidebar is open */
+        .hamburger-container.hidden {
+            display: none;
+        }
+
+        /* Subject Title */
+        .subject-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2C3E50;
+            margin-bottom: 20px;
+        }
+
+        /* Tabbed Navigation */
+        .tabbed-navigation {
+            display: flex;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 20px;
+        }
+
+        .tabbed-navigation .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            border-bottom: none;
+            background-color: #ffffff;
+            margin-right: 5px;
+        }
+
+        .tabbed-navigation .tab.active {
+            background-color: #2C3E50;
+            color: #ffffff;
+        }
+
+        /* Documents Table */
+        .documents-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .documents-table th, .documents-table td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .documents-table th {
+            background-color: #34495e;
+            color: #ffffff;
+        }
+
+        .documents-table td {
+            background-color: #ffffff;
+        }
+
+        .documents-table .button {
+            padding: 5px 10px;
+            color: #ffffff;
+            background-color: #2C3E50;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .documents-table .button.upload {
+            background-color: #1abc9c;
+        }
+
+        .documents-table .button.view {
+            background-color: #3498db;
+        }
+
+        .documents-table .button:hover {
+            opacity: 0.8;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 800px;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .modal-header .close {
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .modal-body .file-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px dashed #ccc;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .modal-body .file-upload.dragging {
+            border-color: #2C3E50;
+        }
+
+        .modal-body .file-upload input[type="file"] {
+            display: none;
+        }
+
+        .modal-body .file-upload-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .modal-body .file-upload-label i {
+            font-size: 48px;
+            color: #2C3E50;
+            margin-bottom: 10px;
+        }
+
+        .modal-body .file-upload-label span {
+            font-size: 16px;
+            color: #2C3E50;
+        }
+
+        .modal-body .progress-bar {
+            width: 100%;
+            background-color: #f4f6f9;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .modal-body .progress-bar .progress {
+            width: 0;
+            height: 10px;
+            background-color: #2C3E50;
+        }
+
+        .modal-body .upload-button {
+            align-self: flex-end;
+            padding: 10px 20px;
+            color: #ffffff;
+            background-color: #2C3E50;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .modal-body .upload-button:hover {
+            opacity: 0.8;
+        }
+
+        .modal-body .document-preview {
+            display: flex;
+            width: 100%;
+        }
+
+        .modal-body .document-preview .left {
+            flex: 1;
+            border-right: 1px solid #ccc;
+            padding-right: 20px;
+            overflow: auto;
+        }
+
+        .modal-body .document-preview .right {
+            flex: 1;
+            padding-left: 20px;
+        }
+
+        .modal-body .document-preview .right .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .modal-body .document-preview .right .tabs .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            border-bottom: none;
+            background-color: #ffffff;
+        }
+
+        .modal-body .document-preview .right .tabs .tab.active {
+            background-color: #2C3E50;
+            color: #ffffff;
+        }
+
+        .modal-body .document-preview .right .tab-content {
+            display: none;
+        }
+
+        .modal-body .document-preview .right .tab-content.active {
+            display: block;
+        }
+
+        .modal-body .document-preview .right .tab-content .description {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .modal-body .document-preview .right .tab-content .description .delete-button {
+            padding: 10px 20px;
+            color: #ffffff;
+            background-color: #e74c3c;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .modal-body .document-preview .right .tab-content .reviews {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .modal-body .document-preview .right .tab-content .reviews .review {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f4f6f9;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <img src="https://cdn.indiabioscience.org/imager/orgs/gitam/695173/GITAM-Logo-New_76ea13ce5cec9e3d897b76c6abe4779f.jpg" alt="College Logo">
+            <span>GITAM</span>
+        </div>
+        <div class="user-actions">
+            <i class="fas fa-bell" title="Notifications"></i>
+            <img src="profile-photo.jpg" alt="Profile Photo" class="profile-photo">
+        </div>
+    </header>
+
+    <!-- Hamburger Menu Container -->
+    <div class="hamburger-container" id="hamburger-container">
+        <i class="fas fa-bars hamburger" id="hamburger" title="Menu"></i>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <a href="dashboard.html">Home</a>
+        <a href="#">Class Schedule</a>
+        <a href="#">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="main-content">
+        <div class="subject-title">Subject Title</div>
+        <!-- Tabbed Navigation -->
+        <div class="tabbed-navigation">
+            <div class="tab active" data-tab="documents">Documents</div>
+            <!-- Add more tabs if needed -->
+        </div>
+        <!-- Tab Content -->
+<!-- Tab Content -->
+<!-- Tab Content -->
+<div class="tab-content active" id="documents">
+    <table class="documents-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Document Slot Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>Syllabus copy</td>
+                <td><button class="button view" data-slot="Syllabus copy">View</button></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Time Table copy</td>
+                <td><button class="button upload" data-slot="Time Table copy">Upload</button></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Attendance register (log sheet to be updated regularly)</td>
+                <td><button class="button view" data-slot="Attendance register (log sheet to be updated regularly)">View</button></td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>Lesson plan including course objectives and outcomes</td>
+                <td><button class="button upload" data-slot="Lesson plan including course objectives and outcomes">Upload</button></td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>Assignment or Quiz Question papers for Five Units</td>
+                <td><button class="button view" data-slot="Assignment or Quiz Question papers for Five Units">View</button></td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>Three Mid Examination Question papers with scheme and solutions</td>
+                <td><button class="button upload" data-slot="Three Mid Examination Question papers with scheme and solutions">Upload</button></td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>Mid Marks Analysis- Action taken for slow learner with proof of remedial or other measures taken Proof of Impact analysis in next internal exams and external exams</td>
+                <td><button class="button view" data-slot="Mid Marks Analysis- Action taken for slow learner with proof of remedial or other measures taken Proof of Impact analysis in next internal exams and external exams">View</button></td>
+            </tr>
+            <tr>
+                <td>8</td>
+                <td>List of topics uploaded in G- learn with details (notes, handouts, drawings, slides, NPTEL or MOOCS video links, model question papers, previous year papers etc..)</td>
+                <td><button class="button upload" data-slot="List of topics uploaded in G- learn with details (notes, handouts, drawings, slides, NPTEL or MOOCS video links, model question papers, previous year papers etc..)">Upload</button></td>
+            </tr>
+            <tr>
+                <td>9</td>
+                <td>Finalization of Continuous evaluation marks</td>
+                <td><button class="button view" data-slot="Finalization of Continuous evaluation marks">View</button></td>
+            </tr>
+            <tr>
+                <td>10</td>
+                <td>OBE Analysis</td>
+                <td><button class="button upload" data-slot="OBE Analysis">Upload</button></td>
+            </tr>
+            <tr>
+                <td>11</td>
+                <td>Semester end exam question paper with key</td>
+                <td><button class="button view" data-slot="Semester end exam question paper with key">View</button></td>
+            </tr>
+            <tr>
+                <td>12</td>
+                <td>End Sem Result analysis of subject and presentation in the form of bar charts grade wise</td>
+                <td><button class="button upload" data-slot="End Sem Result analysis of subject and presentation in the form of bar charts grade wise">Upload</button></td>
+            </tr>
+            <tr>
+                <td>13</td>
+                <td>Copy of Student feedback</td>
+                <td><button class="button view" data-slot="Copy of Student feedback">View</button></td>
+            </tr>
+            <tr>
+                <td>14</td>
+                <td>All Meeting Proceedings</td>
+                <td><button class="button upload" data-slot="All Meeting Proceedings">Upload</button></td>
+            </tr>
+            <tr>
+                <td>15</td>
+                <td>Active Learning Methods Adopted</td>
+                <td><button class="button view" data-slot="Active Learning Methods Adopted">View</button></td>
+            </tr>
+            <tr>
+                <td>16</td>
+                <td>Course Closure meeting</td>
+                <td><button class="button upload" data-slot="Course Closure meeting">Upload</button></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div class="modal" id="upload-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="slot-name">Upload Document</span>
+                <span class="close" onclick="closeModal('upload-modal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="file-upload" id="file-upload">
+                    <input type="file" id="file-input">
+                    <label for="file-input" class="file-upload-label">
+                        <i class="fas fa-upload"></i>
+                        <span>Drag & Drop or Click to Upload</span>
+                    </label>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress" id="upload-progress"></div>
+                </div>
+                <button class="upload-button" onclick="uploadFile()">Upload</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Modal -->
+    <div class="modal" id="view-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="slot-name">View Document</span>
+                <span class="close" onclick="closeModal('view-modal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="document-preview">
+                    <div class="left">
+                        <!-- Document Preview Area -->
+                        <iframe id="document-preview" src="" frameborder="0" style="width: 100%; height: 400px;"></iframe>
+                    </div>
+                    <div class="right">
+                        <div class="tabs">
+                            <div class="tab active" data-tab="description">Description</div>
+                            <div class="tab" data-tab="reviews">Reviews</div>
+                        </div>
+                        <div class="tab-content active" id="description">
+                            <div class="description">
+                                <div>File Name: <span id="file-name">document.pdf</span></div>
+                                <div>File Size: <span id="file-size">1.2 MB</span></div>
+                                <div>Upload Date: <span id="upload-date">2025-02-24</span></div>
+                                <button class="delete-button" onclick="deleteFile()">Delete</button>
+                            </div>
+                        </div>
+                        <div class="tab-content" id="reviews">
+                            <div class="reviews">
+                                <div class="review">
+                                    <strong>Course Coordinator:</strong> Good work!
+                                </div>
+                                <div class="review">
+                                    <strong>NBA Coordinator:</strong> Needs improvement.
+                                </div>
+                                <!-- Add more reviews if needed -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const hamburgerContainer = document.getElementById('hamburger-container');
+        const sidebar = document.getElementById('sidebar');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const fileUpload = document.getElementById('file-upload');
+        const uploadModal = document.getElementById('upload-modal');
+        const viewModal = document.getElementById('view-modal');
+        const uploadProgress = document.getElementById('upload-progress');
+        const documentPreview = document.getElementById('document-preview');
+        const fileName = document.getElementById('file-name');
+        const fileSize = document.getElementById('file-size');
+        const uploadDate = document.getElementById('upload-date');
+
+        hamburgerContainer.addEventListener('mouseover', () => {
+            sidebar.classList.add('show');
+            hamburgerContainer.classList.add('hidden');
+        });
+
+        sidebar.addEventListener('mouseleave', () => {
+            sidebar.classList.remove('show');
+            hamburgerContainer.classList.remove('hidden');
+        });
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(tc => tc.classList.remove('active'));
+
+                tab.classList.add('active');
+                document.getElementById(tab.getAttribute('data-tab')).classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.button.upload').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelector('.modal-header .slot-name').innerText = button.getAttribute('data-slot');
+                openModal('upload-modal');
+            });
+        });
+
+        document.querySelectorAll('.button.view').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelector('.modal-header .slot-name').innerText = button.getAttribute('data-slot');
+                // Set the preview src and other details
+                documentPreview.src = 'syllabus.pdf';
+                fileName.innerText = 'document.pdf';
+                fileSize.innerText = '1.2 MB';
+                uploadDate.innerText = '2025-02-24';
+                openModal('view-modal');
+            });
+        });
+
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function uploadFile() {
+            // Implement file upload functionality
+            // Update the progress bar
+            let progress = 0;
+            const interval = setInterval(() => {
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    alert('File uploaded successfully!');
+                    closeModal('upload-modal');
+                } else {
+                    progress += 10;
+                    uploadProgress.style.width = progress + '%';
+                }
+            }, 200);
+        }
+
+        function deleteFile() {
+            // Implement file delete functionality
+            alert('File deleted successfully!');
+            closeModal('view-modal');
+        }
+    </script>
+</body>
+</html>

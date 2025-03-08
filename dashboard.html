@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f6f9;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styling */
+        .header {
+            background-color: #2C3E50; /* Dark Blue */
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px; /* Increase gap between items */
+            margin-right: 40px; /* Increase right margin */
+        }
+
+        .user-actions i {
+            font-size: 22px;
+            cursor: pointer;
+            color: #ffffff;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .user-actions i:hover {
+            color: #1abc9c; /* Light Green Hover */
+        }
+
+        /* Profile Image */
+        .profile-photo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .profile-photo:hover {
+            transform: scale(1.1);
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            background-color: #34495e; /* Darker Blue */
+            height: 100vh;
+            width: 250px;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            padding-top: 20px; /* To avoid overlapping with header */
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(-250px);
+            z-index: 999;
+        }
+
+        .sidebar.show {
+            transform: translateX(0);
+        }
+
+        .sidebar a {
+            display: block;
+            color: #ecf0f1;
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 18px;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .sidebar a:hover {
+            background-color: #1abc9c; /* Light Green Hover */
+        }
+
+        /* Hamburger Menu */
+        .hamburger-container {
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 70px; /* Just below the header */
+            left: 10px; /* Slightly away from the edge */
+            z-index: 1000;
+            background-color: #ffffff; /* White background */
+            border-radius: 5px; /* Slightly rounded corners */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Soft shadow */
+        }
+
+        .hamburger {
+            font-size: 24px;
+            cursor: pointer;
+            color: #34495e; /* Dark blue/gray color */
+        }
+
+        /* Main Content Styling */
+        .main-content {
+            margin-top: 100px; /* To avoid overlapping with header */
+            flex-grow: 1;
+            padding: 20px;
+            /* margin-left: 250px; */
+            transition: margin-left 0.3s ease-in-out;
+            position: relative; /* Ensure it is correctly positioned */
+            z-index: 1; /* Ensure it stays above the sidebar */
+        }
+
+        .main-content.collapsed {
+            margin-left: 0;
+        }
+
+        /* Hide the hamburger when sidebar is open */
+        .hamburger-container.hidden {
+            display: none;
+        }
+
+        /* Subjects Header */
+        .subjects-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .subjects-header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #2C3E50;
+        }
+
+        .search-sort-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-bar {
+            padding: 8px 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sort-dropdown {
+            padding: 8px 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Subject Cards */
+        .subjects-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .subject-card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .subject-card:hover {
+            transform: scale(1.05);
+        }
+        .subject-card-2 {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .subject-card-2:hover {
+            transform: scale(1.05);
+        }
+
+        .subject-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2C3E50;
+            margin-bottom: 10px;
+        }
+
+        .subject-details {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <img src="https://cdn.indiabioscience.org/imager/orgs/gitam/695173/GITAM-Logo-New_76ea13ce5cec9e3d897b76c6abe4779f.jpg" alt="College Logo">
+            <span>GITAM</span>
+        </div>
+        <div class="user-actions">
+            <i class="fas fa-bell" title="Notifications"></i>
+            <img src="profile-photo.jpg" alt="Profile Photo" class="profile-photo">
+        </div>
+    </header>
+
+    <!-- Hamburger Menu Container -->
+    <div class="hamburger-container" id="hamburger-container">
+        <i class="fas fa-bars hamburger" id="hamburger" title="Menu"></i>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <a href="dashboard.html">Home</a>
+        <a href="#">Class Schedule</a>
+        <a href="trail.html">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="main-content">
+        <div class="subjects-header">
+            <h1>Subjects</h1>
+            <div class="search-sort-container">
+                <input type="text" class="search-bar" placeholder="Search subjects">
+                <select class="sort-dropdown">
+                    <option value="All">All Roles</option>
+                    <option value="Course Coordinator">Course Coordinator</option>
+                    <option value="NBA Coordinator">NBA Coordinator</option>
+                    <option value="Faculty">Faculty</option>
+                </select>
+            </div>
+        </div>
+        <!-- Subjects Section -->
+        <div class="subjects-container">
+            <div class="subject-card">
+                <div class="subject-title">Mathematics</div>
+                <div class="subject-details">Course Coordinator: Dr. Smith</div>
+            </div>
+            <div class="subject-card">
+                <div class="subject-title">Physics</div>
+                <div class="subject-details">Course Coordinator: Dr. Johnson</div>
+            </div>
+            <div class="subject-card">
+                <div class="subject-title">Chemistry</div>
+                <div class="subject-details">Course Coordinator: Dr. Lee</div>
+            </div>
+            <div class="subject-card">
+                <div class="subject-title">Biology</div>
+                <div class="subject-details">Course Coordinator: Dr. Brown</div>
+            </div>
+            <div class="subject-card">
+                <div class="subject-title">Computer Science</div>
+                <div class="subject-details">Course Coordinator: Dr. Williams</div>
+            </div>
+            <div class="subject-card">
+                <div class="subject-title">History</div>
+                <div class="subject-details">Course Coordinator: Dr. Miller</div>
+            </div>
+            <div class="subject-card">
+                <div class="subject-title">Geography</div>
+                <div class="subject-details">Course Coordinator: Dr. Wilson</div>
+            </div>
+            <div class="subject-card">
+                <div class="subject-title">English</div>
+                <div class="subject-details">Course Coordinator: Dr. Moore</div>
+            </div>
+            <div class="subject-card">
+                <div class="subject-title">Art</div>
+                <div class="subject-details">Course Coordinator: Dr. Taylor</div>
+            </div>
+            <div class="subject-card">
+                <div class="subject-title">Music</div>
+                <div class="subject-details">Course Coordinator: Dr. Anderson</div>
+            </div>
+            <div class="subject-card">
+                <div class="subject-title">Physical Education</div>
+                <div class="subject-details">Course Coordinator: Dr. Thomas</div>
+            </div>
+            <div class="subject-card">
+                <div class="subject-title">Economics</div>
+                <div class="subject-details">Course Coordinator: Dr. Jackson</div>
+            </div>
+            <div class="subject-card">
+                <div class="subject-title">Psychology</div>
+                <div class="subject-details">Course Coordinator: Dr. White</div>
+            </div>
+            <div class="subject-card">
+                <div class="subject-title">Philosophy</div>
+                <div class="subject-details">Course Coordinator: Dr. Harris</div>
+            </div>
+            <div class="subject-card">
+                <div class="subject-title">Sociology</div>
+                <div class="subject-details">Course Coordinator: Dr. Martin</div>
+            </div>
+            <div class="subject-card">
+                <div class="subject-title">Political Science</div>
+                <div class="subject-details">Course Coordinator: Dr. Thompson</div>
+            </div>
+            <div class="subject-card">
+                <div class="subject-title">Anthropology</div>
+                <div class="subject-details">Course Coordinator: Dr. Garcia</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const hamburgerContainer = document.getElementById('hamburger-container');
+        const sidebar = document.getElementById('sidebar');
+
+        hamburgerContainer.addEventListener('mouseover', () => {
+            sidebar.classList.add('show');
+            hamburgerContainer.classList.add('hidden');
+        });
+
+        sidebar.addEventListener('mouseleave', () => {
+            sidebar.classList.remove('show');
+            hamburgerContainer.classList.remove('hidden');
+        });
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll(".subject-card").forEach(card => {
+                card.addEventListener("click", function() {
+                    window.location.href = "subjectdetailsfaculty.html";
+                });
+            });
+        });
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll(".subject-card-2").forEach(card => {
+                card.addEventListener("click", function() {
+                    window.location.href = "trail.html";
+                });
+            });
+        });
+    </script>
+</body>
+</html>
