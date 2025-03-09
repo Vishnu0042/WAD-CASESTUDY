@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .profile-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 350px;
+        }
+        .profile-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .profile-pic {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+        .profile-info p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .buttons {
+            margin-top: 15px;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            width: 100%;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        /* Header Styling */
+        .header {
+            background-color: #2C3E50; /* Dark Blue */
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px; /* Increase gap between items */
+            margin-right: 40px; /* Increase right margin */
+        }
+
+        .user-actions i {
+            font-size: 22px;
+            cursor: pointer;
+            color: #ffffff;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .user-actions i:hover {
+            color: #1abc9c; /* Light Green Hover */
+        }
+
+        /* Profile Image */
+        .profile-photo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .profile-photo:hover {
+            transform: scale(1.1);
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            background-color: #34495e; /* Darker Blue */
+            height: 100vh;
+            width: 250px;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            padding-top: 20px; /* To avoid overlapping with header */
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(-250px);
+            z-index: 999;
+        }
+
+        .sidebar.show {
+            transform: translateX(0);
+        }
+
+        .sidebar a {
+            display: block;
+            color: #ecf0f1;
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 18px;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .sidebar a:hover {
+            background-color: #1abc9c; /* Light Green Hover */
+        }
+
+        /* Hamburger Menu */
+        .hamburger-container {
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 70px; /* Just below the header */
+            left: 10px; /* Slightly away from the edge */
+            z-index: 1000;
+            background-color: #ffffff; /* White background */
+            border-radius: 5px; /* Slightly rounded corners */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Soft shadow */
+        }
+
+        .hamburger {
+            font-size: 24px;
+            cursor: pointer;
+            color: #34495e; /* Dark blue/gray color */
+        }
+    
+        /* Hide the hamburger when sidebar is open */
+        .hamburger-container.hidden {
+            display: none;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .profile-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
+        }
+        .profile-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .profile-pic {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            cursor: pointer;
+            object-fit: cover;
+            border: 2px solid #2C3E50;
+        }
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+            width: 100%;
+            padding-left: 20px;
+        }
+        .profile-info p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .buttons {
+            margin-top: 15px;
+            text-align: center;
+        }
+        .btn {
+            background-color: #2C3E50;
+            color: white;
+            border: none;
+            padding: 10px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            width: 100%;
+        }
+        .btn:hover {
+            background-color: #324557;
+        }
+        .hidden {
+            display: none;
+        }
+        input {
+            width: 100%;
+            padding: 5px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <img src="https://cdn.indiabioscience.org/imager/orgs/gitam/695173/GITAM-Logo-New_76ea13ce5cec9e3d897b76c6abe4779f.jpg" alt="College Logo">
+            <span>GITAM</span>
+        </div>
+        <div class="user-actions">
+            <i class="fas fa-bell" title="Notifications"></i>
+            <a href="profile.html"><img src="download.jpeg" alt="Profile Photo" class="profile-photo"></a>
+        </div>
+    </header>
+
+    <!-- Hamburger Menu Container -->
+    <div class="hamburger-container" id="hamburger-container">
+        <i class="fas fa-bars hamburger" id="hamburger" title="Menu"></i>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <a href="dashboard.html">Home</a>
+        <a href="#">Class Schedule</a>
+        <a href="trail.html">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="profile-container">
+        <h3>User Profile</h3>
+        <div class="profile-box">
+            <img src="download.jpeg" alt="Profile Picture" class="profile-pic" id="profile-pic">
+            <input type="file" id="file-input" class="hidden" accept="image/*">
+            <div class="profile-info">
+                <p><strong>Full Name:</strong> <span id="name-text">John Doe</span>
+                    <input type="text" id="name-input" class="hidden" value="John Doe">
+                </p>
+                <p><strong>Employee ID:</strong> <span id="id-text">EMP12345</span>
+                    <input type="text" id="id-input" class="hidden" value="EMP12345">
+                </p>
+                <p><strong>Email ID:</strong> <span id="email-text">johndoe@example.com</span>
+                    <input type="email" id="email-input" class="hidden" value="johndoe@example.com">
+                </p>
+                <p><strong>Phone Number:</strong> <span id="phone-text">+91 9876543210</span>
+                    <input type="text" id="phone-input" class="hidden" value="+91 9876543210">
+                </p>
+                <p><strong>Department:</strong> <span id="dept-text">Computer Science</span>
+                    <input type="text" id="dept-input" class="hidden" value="Computer Science">
+                </p>
+            </div>
+        </div>
+        <div class="buttons">
+            <a href="changepassword.html"><button class="btn">Change Password</button></a>
+            <button class="btn" id="edit-btn">Edit Profile</button>
+            <button class="btn hidden" id="save-btn">Save Changes</button>
+            <button class="btn hidden" id="cancel-btn" style="background-color: red;">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        const hamburgerContainer = document.getElementById('hamburger-container');
+        const sidebar = document.getElementById('sidebar');
+
+        hamburgerContainer.addEventListener('mouseover', () => {
+            sidebar.classList.add('show');
+            hamburgerContainer.classList.add('hidden');
+        });
+
+        sidebar.addEventListener('mouseleave', () => {
+            sidebar.classList.remove('show');
+            hamburgerContainer.classList.remove('hidden');
+        });
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll(".subject-card").forEach(card => {
+                card.addEventListener("click", function() {
+                    window.location.href = "subjectdetailsfaculty.html";
+                });
+            });
+        });
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll(".subject-card-2").forEach(card => {
+                card.addEventListener("click", function() {
+                    window.location.href = "trail.html";
+                });
+            });
+        });
+
+        const editBtn = document.getElementById("edit-btn");
+        const saveBtn = document.getElementById("save-btn");
+        const cancelBtn = document.getElementById("cancel-btn");
+
+        const nameText = document.getElementById("name-text");
+        const nameInput = document.getElementById("name-input");
+        const idText = document.getElementById("id-text");
+        const idInput = document.getElementById("id-input");
+        const emailText = document.getElementById("email-text");
+        const emailInput = document.getElementById("email-input");
+        const phoneText = document.getElementById("phone-text");
+        const phoneInput = document.getElementById("phone-input");
+        const deptText = document.getElementById("dept-text");
+        const deptInput = document.getElementById("dept-input");
+
+        let originalValues = {};
+
+        editBtn.addEventListener("click", () => {
+            saveOriginalValues();
+            toggleEditMode(true);
+        });
+
+        saveBtn.addEventListener("click", () => {
+            nameText.textContent = nameInput.value;
+            idText.textContent = idInput.value;
+            emailText.textContent = emailInput.value;
+            phoneText.textContent = phoneInput.value;
+            deptText.textContent = deptInput.value;
+
+            toggleEditMode(false);
+        });
+
+        cancelBtn.addEventListener("click", () => {
+            restoreOriginalValues();
+            toggleEditMode(false);
+        });
+
+        function toggleEditMode(isEditing) {
+            nameText.classList.toggle("hidden", isEditing);
+            nameInput.classList.toggle("hidden", !isEditing);
+            idText.classList.toggle("hidden", isEditing);
+            idInput.classList.toggle("hidden", !isEditing);
+            emailText.classList.toggle("hidden", isEditing);
+            emailInput.classList.toggle("hidden", !isEditing);
+            phoneText.classList.toggle("hidden", isEditing);
+            phoneInput.classList.toggle("hidden", !isEditing);
+            deptText.classList.toggle("hidden", isEditing);
+            deptInput.classList.toggle("hidden", !isEditing);
+
+            editBtn.classList.toggle("hidden", isEditing);
+            saveBtn.classList.toggle("hidden", !isEditing);
+            cancelBtn.classList.toggle("hidden", !isEditing);
+        }
+
+        function saveOriginalValues() {
+            originalValues = {
+                name: nameInput.value,
+                id: idInput.value,
+                email: emailInput.value,
+                phone: phoneInput.value,
+                dept: deptInput.value
+            };
+        }
+
+        function restoreOriginalValues() {
+            nameInput.value = originalValues.name;
+            idInput.value = originalValues.id;
+            emailInput.value = originalValues.email;
+            phoneInput.value = originalValues.phone;
+            deptInput.value = originalValues.dept;
+        }
+
+        // Profile Picture Change
+        const profilePic = document.getElementById("profile-pic");
+        const fileInput = document.getElementById("file-input");
+
+        profilePic.addEventListener("click", () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener("change", function () {
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    profilePic.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+    </script>
+</body>
+</html>
