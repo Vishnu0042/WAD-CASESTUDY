@@ -714,7 +714,11 @@
                                     <button class="button approve">Approve</button>
                                 </div>
                                 <div>
-                                    <button class="review-button" onclick="addReview()">Add Review</button>           
+                                    <button class="review-button" onclick="addReview()">Add Review</button>  
+                                    <div id="review-input-container" style="display: none; margin-top: 10px;">
+                                        <textarea id="review-input" rows="4" style="width: 100%;"></textarea>
+                                        <button class="review-button" onclick="submitReview()">Submit Review</button>
+                                    </div>         
                                 </div>
                                 
                                             
@@ -841,15 +845,22 @@
         });
 
         function addReview() {
-            const reviewText = prompt('Enter your review:');
-            if (reviewText) {
-                const reviewContainer = document.querySelector('#reviews .reviews');
-                const newReview = document.createElement('div');
-                newReview.classList.add('review');
-                newReview.innerHTML = `<strong>NBA Coordinator:</strong> ${reviewText}`;
-                reviewContainer.appendChild(newReview);
-            }
+        const reviewInputContainer = document.getElementById('review-input-container');
+        reviewInputContainer.style.display = 'block';
+    }
+
+    function submitReview() {
+        const reviewText = document.getElementById('review-input').value;
+        if (reviewText) {
+            const reviewContainer = document.querySelector('#reviews .reviews');
+            const newReview = document.createElement('div');
+            newReview.classList.add('review');
+            newReview.innerHTML = `<strong>NBA Coordinator:</strong> ${reviewText}`;
+            reviewContainer.appendChild(newReview);
+            document.getElementById('review-input').value = '';
+            document.getElementById('review-input-container').style.display = 'none';
         }
+    }
 
         function openModal(modalId) {
             document.getElementById(modalId).style.display = 'flex';
