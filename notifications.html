@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            margin-top: 125px;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f6f9;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styling */
+        .header {
+            background-color: #2C3E50; /* Dark Blue */
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px; /* Increase gap between items */
+            margin-right: 40px; /* Increase right margin */
+        }
+
+        .user-actions i {
+            font-size: 22px;
+            cursor: pointer;
+            color: #ffffff;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .user-actions i:hover {
+            color: #1abc9c; /* Light Green Hover */
+        }
+
+        /* Profile Image */
+        .profile-photo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .profile-photo:hover {
+            transform: scale(1.1);
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            background-color: #34495e; /* Darker Blue */
+            height: 100vh;
+            width: 250px;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            padding-top: 20px; /* To avoid overlapping with header */
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(-250px);
+            z-index: 999;
+        }
+
+        .sidebar.show {
+            transform: translateX(0);
+        }
+
+        .sidebar a {
+            display: block;
+            color: #ecf0f1;
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 18px;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .sidebar a:hover {
+            background-color: #1abc9c; /* Light Green Hover */
+        }
+
+        /* Hamburger Menu */
+        .hamburger-container {
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 70px; /* Just below the header */
+            left: 10px; /* Slightly away from the edge */
+            z-index: 1000;
+            background-color: #ffffff; /* White background */
+            border-radius: 5px; /* Slightly rounded corners */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Soft shadow */
+        }
+
+        .hamburger {
+            font-size: 24px;
+            cursor: pointer;
+            color: #34495e; /* Dark blue/gray color */
+        }
+
+        /* Hide the hamburger when sidebar is open */
+        .hamburger-container.hidden {
+            display: none;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #2c3e50;
+            color: white;
+        }
+
+        .notifi{
+            margin-top: 100px;
+            margin-left: 20px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 800px;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .modal-header .close {
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Tabbed Navigation */
+        .tabbed-navigation {
+            display: flex;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 20px;
+        }
+
+        .tabbed-navigation .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            border-bottom: none;
+            background-color: #ffffff;
+            margin-right: 5px;
+        }
+
+        .tabbed-navigation .tab.active {
+            background-color: #2C3E50;
+            color: #ffffff;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .main-content{
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <img src="https://cdn.indiabioscience.org/imager/orgs/gitam/695173/GITAM-Logo-New_76ea13ce5cec9e3d897b76c6abe4779f.jpg" alt="College Logo">
+            <span>GITAM</span>
+        </div>
+        <div class="user-actions">
+            <i class="fas fa-bell" title="Notifications"></i>
+            <a href="profile.html"><img src="download.jpeg" alt="Profile Photo" class="profile-photo"></a>
+        </div>
+    </header>
+
+    <!-- Hamburger Menu Container -->
+    <div class="hamburger-container" id="hamburger-container">
+        <i class="fas fa-bars hamburger" id="hamburger" title="Menu"></i>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <a href="dashboard.html">Home</a>
+        <a href="#">Class Schedule</a>
+        <a href="index.html">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="main-content">
+        <h2>Notifications</h2>
+        <!-- Tabbed Navigation -->
+        <div class="tabbed-navigation">
+            <div class="tab active" data-tab="new-notifications">New Notifications</div>
+            <div class="tab" data-tab="all-notifications">All Notifications</div>
+        </div>
+        <!-- Tab Content -->
+        <div class="tab-content active" id="new-notifications">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">S.No</th>
+                        <th style="width: 72%;">New Notifications</th>
+                        <th style="width: 13%;">Date</th>
+                        <th style="width: 15%;">Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td class="notification-name">Exam Schedule Released</td>
+                        <td>March 11, 2025</td>
+                        <td>10:00 AM</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td class="notification-name">New Assignment Posted</td>
+                        <td>March 11, 2025</td>
+                        <td>2:30 PM</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td class="notification-name">Meeting Reminder</td>
+                        <td>March 11, 2025</td>
+                        <td>5:45 PM</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-content" id="all-notifications">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">S.No</th>
+                        <th style="width: 72%;">All Notifications</th>
+                        <th style="width: 13%;">Date</th>
+                        <th style="width: 15%;">Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td class="notification-name">Exam Schedule Released</td>
+                        <td>March 11, 2025</td>
+                        <td>10:00 AM</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td class="notification-name">New Assignment Posted</td>
+                        <td>March 11, 2025</td>
+                        <td>2:30 PM</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td class="notification-name">Meeting Reminder</td>
+                        <td>March 11, 2025</td>
+                        <td>5:45 PM</td>
+                    </tr>
+                    <!-- Add more notifications as needed -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Notification Modal -->
+    <div class="modal" id="notification-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="notification-title">Notification Details</span>
+                <span class="close" onclick="closeModal('notification-modal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="notification-details">
+                    <p id="notification-text"></p>
+                    <p id="notification-date"></p>
+                    <p id="notification-time"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const hamburgerContainer = document.getElementById('hamburger-container');
+        const sidebar = document.getElementById('sidebar');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const notificationModal = document.getElementById('notification-modal');
+        const notificationText = document.getElementById('notification-text');
+        const notificationDate = document.getElementById('notification-date');
+        const notificationTime = document.getElementById('notification-time');
+
+        hamburgerContainer.addEventListener('mouseover', () => {
+            sidebar.classList.add('show');
+            hamburgerContainer.classList.add('hidden');
+        });
+
+        sidebar.addEventListener('mouseleave', () => {
+            sidebar.classList.remove('show');
+            hamburgerContainer.classList.remove('hidden');
+        });
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(tc => tc.classList.remove('active'));
+
+                tab.classList.add('active');
+                document.getElementById(tab.getAttribute('data-tab')).classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.notification-name').forEach(notification => {
+            notification.addEventListener('click', () => {
+                const row = notification.parentElement;
+                const cells = row.getElementsByTagName('td');
+                notificationText.innerText = cells[1].innerText;
+                notificationDate.innerText = `Date: ${cells[2].innerText}`;
+                notificationTime.innerText = `Time: ${cells[3].innerText}`;
+                openModal('notification-modal');
+            });
+        });
+
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+    </script>
+</body>
+</html>
